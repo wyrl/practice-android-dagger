@@ -1,3 +1,8 @@
 package com.example.android.dagger.user
 
-annotation class LoggedUserScope()
+import javax.inject.Scope
+
+@Scope
+@MustBeDocumented
+@Retention(value = AnnotationRetention.RUNTIME)
+annotation class LoggedUserScope
