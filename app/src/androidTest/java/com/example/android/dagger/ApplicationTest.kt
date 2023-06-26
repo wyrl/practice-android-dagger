@@ -16,12 +16,15 @@
 
 package com.example.android.dagger
 
+import android.content.Context
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.platform.app.InstrumentationRegistry
 import com.example.android.dagger.main.MainActivity
+import org.junit.Assert
 import org.junit.Test
 
 class ApplicationTest {
@@ -30,15 +33,25 @@ class ApplicationTest {
     fun runApp() {
         ActivityScenario.launch(MainActivity::class.java)
 
+
+
+
         // Should be in Registration/EnterDetails because the user is not registered
         onView(withText("Register to Dagger World!")).check(matches(isDisplayed()))
         onView(withId(R.id.username)).perform(typeText("username"), closeSoftKeyboard())
         onView(withId(R.id.password)).perform(typeText("password"), closeSoftKeyboard())
         onView(withId(R.id.next)).perform(click())
 
+        var context: Context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+        var application = context.applicationContext as MyTestApplication
+
+
         // Registration/T&Cs
         onView(withText("Terms and Conditions")).check(matches(isDisplayed()))
         onView(withText("REGISTER")).perform(click())
+
+        Assert.assertTrue("Login failed!", application.appComponent.userManager().loginUser("username", "password"))
+        Assert.assertFalse("Login should be failed!", application.appComponent.userManager().loginUser("username", "1234"))
 
         // Main
         onView(withText("Hello username!")).check(matches(isDisplayed()))
@@ -61,7 +74,7 @@ class ApplicationTest {
         onView(withText("REFRESH NOTIFICATIONS")).check(matches(isDisplayed()))
         onView(withText("LOGOUT")).perform(click())
 
-        // Login
+        // Unregister
         onView(withText("Welcome to Dagger World!")).check(matches(isDisplayed()))
         onView(withId(R.id.unregister)).perform(click())
 
